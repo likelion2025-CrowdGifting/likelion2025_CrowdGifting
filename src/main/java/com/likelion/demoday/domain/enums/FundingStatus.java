@@ -1,6 +1,5 @@
 package com.likelion.demoday.domain.enums;
 
-
 public enum FundingStatus {
     // 진행 중인 펀딩
     IN_PROGRESS,
@@ -14,4 +13,3 @@ public enum FundingStatus {
     //마감일 경과로 만료된 펀딩
     ENDED_EXPIRED
 }
-
