@@ -28,6 +28,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println(">>> SecurityConfig loaded. jwtAuthenticationFilter=" + jwtAuthenticationFilter.getClass());
+
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -36,6 +38,9 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                        // 유저는 로그인 필요
+                        .requestMatchers(HttpMethod.GET, "/api/v1/fundings/my").authenticated()
+
                         // 게스트 허용
                         .requestMatchers(HttpMethod.GET,  "/api/v1/fundings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/fundings/*/contributions").permitAll()

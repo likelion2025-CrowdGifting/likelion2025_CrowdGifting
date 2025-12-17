@@ -37,11 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         String method = request.getMethod();
 
+        // 보호 API는 절대 스킵하지 않기
+        if (HttpMethod.GET.matches(method) && PATH_MATCHER.match("/api/v1/fundings/my", uri)) {
+            log.info("[shouldNotFilter] {} {} -> false (protected)", method, uri);
+            return false;
+        }
+
         // 인증 관련은 토큰 없이 접근
         if (PATH_MATCHER.match("/api/v1/auth/**", uri)) return true;
 
-        // 펀딩 상세 조회(게스트 허용)
-        if (HttpMethod.GET.matches(method) && PATH_MATCHER.match("/api/v1/fundings/**", uri)) return true;
+        // 게스트 허용: 펀딩 목록/상세만
+        if (HttpMethod.GET.matches(method) && PATH_MATCHER.match("/api/v1/fundings", uri)) return true;
+        if (HttpMethod.GET.matches(method) && PATH_MATCHER.match("/api/v1/fundings/*", uri)) return true;
 
         // 게스트 참여 생성(게스트 허용)
         if (HttpMethod.POST.matches(method) && PATH_MATCHER.match("/api/v1/fundings/*/contributions", uri)) return true;
@@ -49,18 +56,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 참여/결제 상태 조회(게스트 허용)
         if (HttpMethod.GET.matches(method) && PATH_MATCHER.match("/api/v1/contributions/**", uri)) return true;
 
-        // 토스 webhook (서버가 받는 거라 보통 permitAll)
+        // 토스 webhook
         if (HttpMethod.POST.matches(method) && PATH_MATCHER.match("/api/v1/payments/toss/webhook", uri)) return true;
 
         return false;
     }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("[JWT FILTER] uri={}", request.getRequestURI());
+        log.info("[JWT FILTER] authHeader={}", request.getHeader("Authorization"));
+
         String token = getTokenFromRequest(request);
+        log.info("[JWT FILTER] extracted token={}", token);
 
         // 토큰이 없으면 게스트 요청이므로 그대로 통과
         if (!StringUtils.hasText(token)) {
