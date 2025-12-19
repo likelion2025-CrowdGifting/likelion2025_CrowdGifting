@@ -63,8 +63,9 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            pgrep -f java | xargs -r kill -9
-            rm -f /home/${{ secrets.EC2_USERNAME }}/*.jar
+            sudo pgrep -f java | xargs -r sudo kill -9
+            sudo rm -f /home/${{ secrets.EC2_USERNAME }}/*.jar
+            sudo rm -f /home/${{ secrets.EC2_USERNAME }}/nohup.out
 
       # 새 파일 전송 (SCP)
       - name: Copy Jar to EC2
