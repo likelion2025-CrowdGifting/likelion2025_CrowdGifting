@@ -41,6 +41,9 @@ public class SecurityConfig {
                         // 유저는 로그인 필요
                         .requestMatchers(HttpMethod.GET, "/api/v1/fundings/my").authenticated()
 
+                        // Swagger 허용
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
                         // 게스트 허용
                         .requestMatchers(HttpMethod.GET,  "/api/v1/fundings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/fundings/*/contributions").permitAll()
@@ -48,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/payments/toss/webhook").permitAll()
                         .anyRequest().authenticated()
+
                 );
 
         return http.build();
