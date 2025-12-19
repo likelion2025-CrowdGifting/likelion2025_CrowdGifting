@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Java CI/CD with Gradle
 
 on:
   push:
@@ -10,9 +10,9 @@ permissions:
   contents: read
 
 jobs:
+  # 빌드 (CI)
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +22,14 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Make application.yml
+        run: |
+          mkdir -p ./src/main/resources
+          cd ./src/main/resources
+          touch ./application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+        shell: bash
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -30,3 +38,50 @@ jobs:
 
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build -x test
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: build/libs/*.jar
+
+  # 배포 (CD)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+
+      # 기존 서버 중지 & 파일 정리
+      - name: Stop current server & Clean up
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            pgrep -f java | xargs -r kill -9
+            rm -f /home/${{ secrets.EC2_USERNAME }}/*.jar
+
+      # 새 파일 전송 (SCP)
+      - name: Copy Jar to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "*.jar"
+          target: "/home/${{ secrets.EC2_USERNAME }}"
+
+      # 새 서버 실행
+      - name: Start new server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            nohup java -jar /home/${{ secrets.EC2_USERNAME }}/*.jar > nohup.out 2>&1 &
