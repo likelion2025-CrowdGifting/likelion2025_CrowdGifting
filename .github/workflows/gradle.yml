@@ -63,7 +63,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo pgrep -f java | xargs -r sudo kill -9
+            sudo pgrep -f java | xargs -r sudo kill -9 || true
             sudo rm -f /home/${{ secrets.EC2_USERNAME }}/*.jar
             sudo rm -f /home/${{ secrets.EC2_USERNAME }}/nohup.out
 
