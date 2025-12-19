@@ -55,7 +55,7 @@ jobs:
         with:
           name: build-artifact
 
-      # 기존 서버 중지 & 파일 정리
+      # 기존 서버 중지 (8080 포트 점유 프로세스 강제 종료)
       - name: Stop current server & Clean up
         uses: appleboy/ssh-action@master
         with:
@@ -63,8 +63,13 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo pkill -9 -f java || true
-            sleep 2
+            # 1. 8080 포트를 쓰는 프로세스(자바)를 찾아서 죽임 (없으면 에러 무시)
+            sudo fuser -k -n tcp 8080 || true
+            
+            # 2. 확실히 죽을 때까지 10초 대기
+            sleep 10
+            
+            # 3. 기존 파일 청소
             sudo rm -f /home/${{ secrets.EC2_USERNAME }}/*.jar
             sudo rm -f /home/${{ secrets.EC2_USERNAME }}/nohup.out
 
