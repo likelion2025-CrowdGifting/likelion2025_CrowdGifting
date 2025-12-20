@@ -42,7 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/fundings/my").authenticated()
 
                         // Swagger 허용
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-ui.html").permitAll()
 
                         // 게스트 허용
                         .requestMatchers(HttpMethod.GET,  "/api/v1/fundings/**").permitAll()

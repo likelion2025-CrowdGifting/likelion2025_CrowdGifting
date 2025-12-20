@@ -86,6 +86,10 @@ public class Contribution {
         this.paidAt = LocalDateTime.now();
     }
 
+    public void updatePaymentStatus(PaymentStatus status) {
+        this.paymentStatus = status;
+    }
+
     // 결제 실패 처리
     public void failPayment() {
         this.paymentStatus = PaymentStatus.FAILED;

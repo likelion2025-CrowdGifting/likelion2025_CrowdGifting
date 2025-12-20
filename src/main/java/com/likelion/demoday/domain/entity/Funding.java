@@ -33,6 +33,9 @@ public class Funding {
     @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Column(name = "gift_img_url", nullable = false)
     private String giftImgUrl;
 
@@ -66,9 +69,10 @@ public class Funding {
     }
 
     @Builder
-    public Funding(User owner, String title, String giftImgUrl, BigDecimal targetAmount, LocalDateTime deadlineAt) {
+    public Funding(User owner, String title, String description, String giftImgUrl, BigDecimal targetAmount, LocalDateTime deadlineAt) {
         this.owner = owner;
         this.title = title;
+        this.description = description;
         this.giftImgUrl = giftImgUrl;
         this.targetAmount = targetAmount;
         this.deadlineAt = deadlineAt;

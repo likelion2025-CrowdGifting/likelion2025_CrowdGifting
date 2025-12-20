@@ -28,5 +28,8 @@ public class CreateFundingRequest {
     @NotNull(message = "마감일은 필수입니다.")
     @Future(message = "마감일은 현재 시간 이후여야 합니다.")
     private LocalDateTime deadlineAt;
+
+    private MultipartFile image;
+    private String description;
 }
 
