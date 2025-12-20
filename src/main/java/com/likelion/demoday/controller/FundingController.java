@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class FundingController {
     private final FundingService fundingService;
     private final S3Service s3Service;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<FundingDetailResponse>> createFunding(
             Authentication authentication,
             @Valid @ModelAttribute CreateFundingRequest request) {
