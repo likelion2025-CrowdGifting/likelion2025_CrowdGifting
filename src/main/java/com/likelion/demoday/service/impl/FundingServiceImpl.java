@@ -14,6 +14,7 @@ import com.likelion.demoday.dto.response.ContributionResponse;
 import com.likelion.demoday.dto.response.FundingDetailResponse;
 import com.likelion.demoday.dto.response.FundingListResponse;
 import com.likelion.demoday.dto.response.VirtualAccountInfo;
+import com.likelion.demoday.global.aws.S3Service;
 import com.likelion.demoday.global.exception.BusinessException;
 import com.likelion.demoday.global.exception.ErrorCode;
 import com.likelion.demoday.service.FundingService;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -37,11 +38,11 @@ public class FundingServiceImpl implements FundingService {
     private final FundingRepository fundingRepository;
     private final UserRepository userRepository;
     private final ContributionRepository contributionRepository;
-    // TODO: FileStorageService 추가 필요 (이미지 업로드용)
+    private final S3Service s3Service;
     
     @Override
     @Transactional
-    public FundingDetailResponse createFunding(Long userId, CreateFundingRequest request) {
+    public FundingDetailResponse createFunding(Long userId, CreateFundingRequest request, String imageUrl) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
@@ -55,12 +56,10 @@ public class FundingServiceImpl implements FundingService {
             throw new BusinessException(ErrorCode.INVALID_DEADLINE);
         }
         
-        // 이미지 업로드 (TODO: 실제 구현 필요)
-        String imageUrl = uploadImage(request.getGiftImage());
-        
         Funding funding = Funding.builder()
                 .owner(owner)
                 .title(request.getTitle())
+                .description(request.getDescription())
                 .giftImgUrl(imageUrl)
                 .targetAmount(request.getTargetAmount())
                 .deadlineAt(request.getDeadlineAt())
@@ -221,15 +220,6 @@ public class FundingServiceImpl implements FundingService {
                 .createdAt(contribution.getCreatedAt())
                 .paidAt(contribution.getPaidAt())
                 .build();
-    }
-    
-    /**
-     * 이미지 업로드 (TODO: 실제 구현 필요 - AWS S3)
-     */
-    private String uploadImage(MultipartFile image) {
-        // TODO: 실제 이미지 업로드 로직 구현
-        // 예: S3 업로드 후 URL 반환
-        return "https://example.com/images/" + image.getOriginalFilename();
     }
 }
 

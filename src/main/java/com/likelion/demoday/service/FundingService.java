@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface FundingService {
-    
-    //새 펀딩 생성
-    FundingDetailResponse createFunding(Long userId, CreateFundingRequest request);
-    
+
+    // 새 펀딩 생성
+    FundingDetailResponse createFunding(Long userId, CreateFundingRequest request, String imageUrl);
+
     //펀딩 상세 조회 (게스트 참여 내역 포함)
     FundingDetailResponse getFundingDetail(Long fundingId);
     
@@ -24,7 +24,6 @@ public interface FundingService {
     
     // 펀딩 중단
     void stopFunding(Long userId, Long fundingId, StopFundingRequest request);
-
 
     void updateExpiredFundings();
 }
