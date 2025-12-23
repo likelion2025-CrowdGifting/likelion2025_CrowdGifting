@@ -66,27 +66,24 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_EXCEEDS_REMAINING);
         }
 
-        // ============================================================
-        // 외부 PG 결제 검증 로직 (테스트용 주석 처리)
-        // ============================================================
         // 5. 포트원 액세스 토큰 발급
-        // String accessToken = getPortOneAccessToken();
-        //
-        // // 6. 포트원 결제 정보 조회
-        // Map<String, Object> paymentData = getPaymentData(request.getImpUid(), accessToken);
-        //
-        // // 7. 결제 상태 확인
-        // String status = (String) paymentData.get("status");
-        // if (!"paid".equals(status)) {
-        //     throw new BusinessException(ErrorCode.PAYMENT_NOT_PAID); // 결제가 완료되지 않음
-        // }
-        //
-        // // 8. 외부 결제 금액 검증
-        // BigDecimal portOneAmount = new BigDecimal(String.valueOf(paymentData.get("amount")));
-        // if (contribution.getAmount().compareTo(portOneAmount) != 0) {
-        //     log.error("결제 금액 불일치: DB={}, PortOne={}", contribution.getAmount(), portOneAmount);
-        //     throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH); // 금액 위변조 의심
-        // }
+        String accessToken = getPortOneAccessToken();
+
+        // 6. 포트원 결제 정보 조회
+        Map<String, Object> paymentData = getPaymentData(request.getImpUid(), accessToken);
+
+        // 7. 결제 상태 확인
+        String status = (String) paymentData.get("status");
+        if (!"paid".equals(status)) {
+            throw new BusinessException(ErrorCode.PAYMENT_NOT_PAID);
+        }
+
+        // 8. 외부 결제 금액 검증
+        BigDecimal portOneAmount = new BigDecimal(String.valueOf(paymentData.get("amount")));
+        if (contribution.getAmount().compareTo(portOneAmount) != 0) {
+             log.error("결제 금액 불일치: DB={}, PortOne={}", contribution.getAmount(), portOneAmount);
+             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH); // 금액 위변조 의심
+        }
 
         // 9. 검증 통과 -> 결제 완료 처리 로직 실행
         processPaymentSuccess(contribution, request.getImpUid());
