@@ -56,6 +56,12 @@ public class ContributionServiceImpl implements ContributionService {
             throw new BusinessException(ErrorCode.INVALID_CONTRIBUTION_AMOUNT);
         }
         
+        // 결제 금액 검증: 남은 금액 초과 시 참여 거부
+        BigDecimal remainingAmount = funding.getRemainingAmount();
+        if (request.getAmount().compareTo(remainingAmount) > 0) {
+            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_EXCEEDS_REMAINING);
+        }
+        
         // 주문번호 생성 (멱등성 보장용)
         String orderId = generateOrderId(fundingId);
         

@@ -134,18 +134,24 @@ public class FundingServiceImpl implements FundingService {
     @Override
     @Transactional
     public void updateExpiredFundings() {
+        // IN_PROGRESS 상태인 펀딩만 조회하여 마감일 경과 시 ENDED_EXPIRED로 변경
+        // 이미 ENDED_SUCCESS나 ENDED_STOPPED인 펀딩은 변경하지 않음
         List<Funding> expiredFundings = fundingRepository.findExpiredFundings(
                 FundingStatus.IN_PROGRESS, 
                 LocalDateTime.now()
         );
         
         for (Funding funding : expiredFundings) {
-            funding.updateStatus(FundingStatus.ENDED_EXPIRED);
-            fundingRepository.save(funding);
+            // 한 번 더 확인: IN_PROGRESS 상태인 경우에만 변경
+            if (funding.getStatus() == FundingStatus.IN_PROGRESS) {
+                funding.updateStatus(FundingStatus.ENDED_EXPIRED);
+                fundingRepository.save(funding);
+            }
         }
     }
     
     // 펀딩 상태 자동 업데이트 (마감일 기준)
+    // ENDED_EXPIRED: deadlineAt 경과 시에만 변경 (이미 ENDED_SUCCESS나 ENDED_STOPPED인 경우는 변경하지 않음)
     private void updateFundingStatusIfNeeded(Funding funding) {
         if (funding.getStatus() == FundingStatus.IN_PROGRESS 
                 && funding.getDeadlineAt().isBefore(LocalDateTime.now())) {

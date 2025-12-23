@@ -48,6 +48,7 @@ public enum ErrorCode {
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 4005, "결제 금액이 일치하지 않습니다."),
     PAYMENT_NOT_PAID(HttpStatus.BAD_REQUEST, 4006, "결제가 완료되지 않았습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 4007, "결제 정보를 찾을 수 없습니다."),
+    PAYMENT_AMOUNT_EXCEEDS_REMAINING(HttpStatus.BAD_REQUEST, 4008, "결제 금액이 남은 금액을 초과합니다."),
 
     // --- 기타/시스템 (5000번대) ---
     IMAGE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5001, "이미지 업로드에 실패했습니다.");
