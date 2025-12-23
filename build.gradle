@@ -48,6 +48,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	runtimeOnly 'com.h2database:h2' // 테스트 DB
 
 	// AWS S3
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.0'
