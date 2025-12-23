@@ -86,4 +86,16 @@ public class FundingController {
 
         return ResponseEntity.ok(BaseResponse.success());
     }
+
+    // 선물 받기 (정산)
+    @PostMapping("/{fundingId}/payout")
+    public ResponseEntity<BaseResponse<Void>> payoutFunding(
+            Authentication authentication,
+            @PathVariable Long fundingId) {
+
+        Long userId = Long.parseLong(authentication.getName());
+        fundingService.payoutFunding(userId, fundingId);
+
+        return ResponseEntity.ok(BaseResponse.success(null));
+    }
 }

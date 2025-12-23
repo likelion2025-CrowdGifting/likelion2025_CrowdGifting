@@ -149,6 +149,30 @@ public class FundingServiceImpl implements FundingService {
             }
         }
     }
+
+    @Override
+    @Transactional
+    public void payoutFunding(Long userId, Long fundingId) {
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.FUNDING_NOT_FOUND));
+
+        // 1. 펀딩 주인이 맞는지 확인
+        if (!funding.getOwner().getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_USER);
+        }
+
+        // 2. 이미 정산받았는지 확인
+        if (funding.getStatus() == FundingStatus.SETTLED) {
+            throw new BusinessException(ErrorCode.ALREADY_PAID_OUT);
+        }
+
+        // 3. 주인 잔고에 돈 넣어주기
+        User owner = funding.getOwner();
+        owner.addBalance(funding.getCurrentAmount().longValue());
+
+        // 4. 펀딩 상태를 '정산 완료'로 변경
+        funding.updateStatus(FundingStatus.SETTLED);
+    }
     
     // 펀딩 상태 자동 업데이트 (마감일 기준)
     // ENDED_EXPIRED: deadlineAt 경과 시에만 변경 (이미 ENDED_SUCCESS나 ENDED_STOPPED인 경우는 변경하지 않음)

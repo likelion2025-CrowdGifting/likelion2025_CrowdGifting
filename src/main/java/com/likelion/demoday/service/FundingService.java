@@ -26,5 +26,8 @@ public interface FundingService {
     void stopFunding(Long userId, Long fundingId, StopFundingRequest request);
 
     void updateExpiredFundings();
+
+    // 펀딩 정산하여 선물 받기
+    void payoutFunding(Long userId, Long fundingId);
 }
 

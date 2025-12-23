@@ -18,5 +18,6 @@ public class UserResponse {
     private Bank bank;
     private String accountNumber;
     private LocalDateTime createdAt;
+    private Long balance;
 }
 
