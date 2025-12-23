@@ -34,7 +34,9 @@ public enum ErrorCode {
     FUNDING_NOT_OWNER(HttpStatus.FORBIDDEN, 2003, "펀딩 소유자가 아닙니다."),
     INVALID_TARGET_AMOUNT(HttpStatus.BAD_REQUEST, 2004, "목표 금액은 최소 10,000원 이상이어야 합니다."),
     INVALID_DEADLINE(HttpStatus.BAD_REQUEST, 2005, "마감일은 현재 시간 이후여야 합니다."),
-    FUNDING_EXPIRED(HttpStatus.BAD_REQUEST, 2006, "마감일이 지난 펀딩입니다."), // 3003에서 이동 (펀딩 관련이므로)
+    FUNDING_EXPIRED(HttpStatus.BAD_REQUEST, 2006, "마감일이 지난 펀딩입니다."),
+    FORBIDDEN_USER(HttpStatus.FORBIDDEN, 2007, "해당 펀딩의 주인이 아닙니다."),
+    ALREADY_PAID_OUT(HttpStatus.BAD_REQUEST, 2008, "이미 정산이 완료된 펀딩입니다."),
 
     // --- 참여(Contribution) 관련 (3000번대) ---
     CONTRIBUTION_NOT_FOUND(HttpStatus.NOT_FOUND, 3001, "참여 내역을 찾을 수 없습니다."),

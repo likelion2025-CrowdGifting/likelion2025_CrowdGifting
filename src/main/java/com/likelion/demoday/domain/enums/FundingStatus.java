@@ -11,5 +11,8 @@ public enum FundingStatus {
     ENDED_STOPPED,
     
     //마감일 경과로 만료된 펀딩
-    ENDED_EXPIRED
+    ENDED_EXPIRED,
+
+    // 정산 완료
+    SETTLED
 }

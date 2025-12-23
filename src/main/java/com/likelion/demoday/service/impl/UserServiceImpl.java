@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
                 .bank(user.getBank())
                 .accountNumber(user.getAccountNumber())
                 .createdAt(user.getCreatedAt())
+                .balance(user.getBalance())
                 .build();
     }
     

@@ -43,6 +43,13 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private Long balance = 0L;
+
+    public void addBalance(Long amount) {
+        this.balance += amount;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
