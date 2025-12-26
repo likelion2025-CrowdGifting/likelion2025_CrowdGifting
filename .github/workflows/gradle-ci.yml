@@ -36,3 +36,7 @@ jobs:
 
       - name: Build and test with Gradle Wrapper
         run: ./gradlew clean build -x test --no-daemon
+        env:
+          GRADLE_OPTS: >-
+            -Dorg.gradle.internal.http.connectionTimeout=600000
+            -Dorg.gradle.internal.http.socketTimeout=600000
