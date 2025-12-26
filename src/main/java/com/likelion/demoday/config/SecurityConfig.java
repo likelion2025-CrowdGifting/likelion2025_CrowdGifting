@@ -38,21 +38,28 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        // 유저는 로그인 필요
-                        .requestMatchers(HttpMethod.GET, "/api/v1/fundings/my").authenticated()
+                        // CORS Preflight (OPTIONS) 요청 전체 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // AWS 헬스체크 등 루트 경로("/") 요청 허용
+                        .requestMatchers("/").permitAll()
 
                         // Swagger 허용
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
                                 "/swagger-ui.html").permitAll()
 
                         // 게스트 허용
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/api/v1/fundings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/fundings/*/contributions").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/api/v1/contributions/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/payments/toss/webhook").permitAll()
-                        .anyRequest().authenticated()
 
+                        // 유저는 로그인 필요
+                        .requestMatchers(HttpMethod.GET, "/api/v1/fundings/my").authenticated()
+
+                        // 그 외 모든 요청은 인증 필요
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
@@ -66,6 +73,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // 프론트엔드 주소 허용
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
