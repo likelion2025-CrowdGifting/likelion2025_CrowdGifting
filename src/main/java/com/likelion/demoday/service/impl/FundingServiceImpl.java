@@ -174,11 +174,22 @@ public class FundingServiceImpl implements FundingService {
         funding.updateStatus(FundingStatus.SETTLED);
     }
     
-    // 펀딩 상태 자동 업데이트 (마감일 기준)
-    // ENDED_EXPIRED: deadlineAt 경과 시에만 변경 (이미 ENDED_SUCCESS나 ENDED_STOPPED인 경우는 변경하지 않음)
+    // 펀딩 상태 자동 업데이트 (조회 시점)
+    // 우선순위: 중단된 펀딩은 그대로 유지 -> 목표 금액 달성 시 ENDED_SUCCESS -> 마감 기한 경과 시 ENDED_EXPIRED
     private void updateFundingStatusIfNeeded(Funding funding) {
-        if (funding.getStatus() == FundingStatus.IN_PROGRESS 
-                && funding.getDeadlineAt().isBefore(LocalDateTime.now())) {
+        if (funding.getStatus() != FundingStatus.IN_PROGRESS) {
+            return; // 이미 종료된 펀딩은 변경하지 않음
+        }
+
+        // 목표 금액 달성 시 성공 처리
+        if (funding.isAchieved()) {
+            funding.updateStatus(FundingStatus.ENDED_SUCCESS);
+            fundingRepository.save(funding);
+            return;
+        }
+
+        // 마감일 경과 시 만료 처리 (목표 미달성 상태만 해당)
+        if (funding.getDeadlineAt().isBefore(LocalDateTime.now())) {
             funding.updateStatus(FundingStatus.ENDED_EXPIRED);
             fundingRepository.save(funding);
         }
