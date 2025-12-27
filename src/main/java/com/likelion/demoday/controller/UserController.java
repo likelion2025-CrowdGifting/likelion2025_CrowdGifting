@@ -48,4 +48,12 @@ public class UserController {
 
         return ResponseEntity.ok(BaseResponse.success(response));
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<BaseResponse<Void>> deleteUser(Authentication authentication) {
+        Long userId = Long.parseLong(authentication.getName());
+        userService.deleteUser(userId); // 아까 만든 서비스 메서드 호출
+
+        return ResponseEntity.ok(BaseResponse.success(null));
+    }
 }

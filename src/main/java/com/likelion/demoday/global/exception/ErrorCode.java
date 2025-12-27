@@ -27,6 +27,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, 1003, "이미 존재하는 이메일입니다."),
     NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, 1004, "이미 존재하는 닉네임입니다."),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, 1005, "이메일 또는 비밀번호가 올바르지 않습니다."),
+    USER_WITHDRAWN(HttpStatus.UNAUTHORIZED, 1006, "탈퇴한 회원입니다."),
 
     // --- 펀딩 관련 (2000번대) ---
     FUNDING_NOT_FOUND(HttpStatus.NOT_FOUND, 2001, "펀딩을 찾을 수 없습니다."),

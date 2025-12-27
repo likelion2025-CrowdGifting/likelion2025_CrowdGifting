@@ -1,6 +1,7 @@
 package com.likelion.demoday.service.impl;
 
 import com.likelion.demoday.domain.entity.User;
+import com.likelion.demoday.domain.enums.UserStatus;
 import com.likelion.demoday.domain.repository.UserRepository;
 import com.likelion.demoday.dto.request.LoginRequest;
 import com.likelion.demoday.dto.request.SignupRequest;
@@ -77,7 +78,12 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
-        
+
+        // 탈퇴한 회원 체크
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new BusinessException(ErrorCode.USER_WITHDRAWN);
+        }
+
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);

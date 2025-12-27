@@ -14,5 +14,8 @@ public interface UserService {
     
     // 계좌 정보 수정
     UserResponse updateBankAccount(Long userId, UpdateBankAccountRequest request);
+
+    // 회원탈퇴
+    void deleteUser(Long userId);
 }
 

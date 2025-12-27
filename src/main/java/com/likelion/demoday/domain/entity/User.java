@@ -1,6 +1,7 @@
 package com.likelion.demoday.domain.entity;
 
 import com.likelion.demoday.domain.enums.Bank;
+import com.likelion.demoday.domain.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -46,6 +47,9 @@ public class User {
     @Column(nullable = false)
     private Long balance = 0L;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
     public void addBalance(Long amount) {
         this.balance += amount;
     }
@@ -68,6 +72,7 @@ public class User {
         this.nickname = nickname;
         this.bank = bank;
         this.accountNumber = accountNumber;
+        this.status = UserStatus.ACTIVE;
     }
 
     // 닉네임 수정
@@ -79,6 +84,11 @@ public class User {
     public void updateBankAccount(Bank bank, String accountNumber) {
         this.bank = bank;
         this.accountNumber = accountNumber;
+    }
+
+    // 회원탈퇴
+    public void withdraw() {
+        this.status = UserStatus.DELETED;
     }
 }
 
