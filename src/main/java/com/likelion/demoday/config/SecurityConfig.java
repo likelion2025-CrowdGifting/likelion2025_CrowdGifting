@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/fundings/*/contributions").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/api/v1/contributions/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/payments/toss/webhook").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/payments/complete").permitAll()
 
                         // 유저는 로그인 필요
                         .requestMatchers(HttpMethod.GET, "/api/v1/fundings/my").authenticated()
